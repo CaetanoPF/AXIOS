@@ -4,11 +4,11 @@ import { ref, onMounted } from 'vue';
 const API_KEY = 'd341436234a2bb8f0adc73114e093ab2';
 const BASE_URL = 'https://api.themoviedb.org/3';
 
-const movies = ref([]);
+const series = ref([]);
 const genres = ref([]);
 const selectedGenre = ref(null);
 const searchQuery = ref('');
-const selectedMovie = ref(null);
+const selectedSeries = ref(null);
 const currentPage = ref(1);
 const totalPages = ref(1);
 const loading = ref(false);
@@ -16,7 +16,7 @@ const loading = ref(false);
 const fetchGenres = async () => {
   try {
     const response = await fetch(
-      `${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=pt-BR`
+      `${BASE_URL}/genre/tv/list?api_key=${API_KEY}&language=pt-BR`
     );
     const data = await response.json();
     genres.value = data.genres;
@@ -25,39 +25,39 @@ const fetchGenres = async () => {
   }
 };
 
-const fetchMovies = async (genreId = '', page = 1) => {
+const fetchSeries = async (genreId = '', page = 1) => {
   loading.value = true;
   try {
     const url = genreId
-      ? `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&language=pt-BR&page=${page}`
-      : `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=pt-BR&page=${page}`;
+      ? `${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreId}&language=pt-BR&page=${page}`
+      : `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=pt-BR&page=${page}`;
     
     const response = await fetch(url);
     const data = await response.json();
-    movies.value = data.results;
+    series.value = data.results;
     totalPages.value = data.total_pages;
     currentPage.value = page;
     selectedGenre.value = genreId;
   } catch (error) {
-    console.error('Erro ao buscar filmes:', error);
+    console.error('Erro ao buscar séries:', error);
   } finally {
     loading.value = false;
   }
 };
 
-const searchMovies = async () => {
+const searchSeries = async () => {
   if (!searchQuery.value) {
-    fetchMovies('', 1);
+    fetchSeries('', 1);
     return;
   }
   
   loading.value = true;
   try {
     const response = await fetch(
-      `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${searchQuery.value}&language=pt-BR&page=${currentPage.value}`
+      `${BASE_URL}/search/tv?api_key=${API_KEY}&query=${searchQuery.value}&language=pt-BR&page=${currentPage.value}`
     );
     const data = await response.json();
-    movies.value = data.results;
+    series.value = data.results;
     totalPages.value = data.total_pages;
   } catch (error) {
     console.error('Erro na busca:', error);
@@ -66,15 +66,15 @@ const searchMovies = async () => {
   }
 };
 
-const showMovieDetails = async (movie) => {
+const showSeriesDetails = async (show) => {
   try {
     const response = await fetch(
-      `${BASE_URL}/movie/${movie.id}?api_key=${API_KEY}&language=pt-BR&append_to_response=credits,videos`
+      `${BASE_URL}/tv/${show.id}?api_key=${API_KEY}&language=pt-BR&append_to_response=credits,videos`
     );
-    const detailedMovie = await response.json();
-    selectedMovie.value = detailedMovie;
+    const detailedSeries = await response.json();
+    selectedSeries.value = detailedSeries;
   } catch (error) {
-    console.error('Erro ao buscar detalhes do filme:', error);
+    console.error('Erro ao buscar detalhes da série:', error);
   }
 };
 
@@ -84,37 +84,37 @@ const formatDate = (dateStr) => {
 
 const changePage = (page) => {
   if (selectedGenre.value) {
-    fetchMovies(selectedGenre.value, page);
+    fetchSeries(selectedGenre.value, page);
   } else if (searchQuery.value) {
     currentPage.value = page;
-    searchMovies();
+    searchSeries();
   } else {
-    fetchMovies('', page);
+    fetchSeries('', page);
   }
 };
 
 onMounted(() => {
   fetchGenres();
-  fetchMovies();
+  fetchSeries();
 });
 </script>
 
 <template>
-  <div class="movies">
+  <div class="series">
     <div class="filters">
       <div class="search-container">
         <input 
           type="text" 
           v-model="searchQuery" 
-          @keyup.enter="searchMovies"
-          placeholder="Buscar filmes..."
+          @keyup.enter="searchSeries"
+          placeholder="Buscar séries..."
         >
-        <button @click="searchMovies">Buscar</button>
+        <button @click="searchSeries">Buscar</button>
       </div>
       
       <div class="genres">
         <button 
-          @click="fetchMovies('', 1)"
+          @click="fetchSeries('', 1)"
           :class="{ active: !selectedGenre }"
         >
           Todos
@@ -122,7 +122,7 @@ onMounted(() => {
         <button 
           v-for="genre in genres" 
           :key="genre.id"
-          @click="fetchMovies(genre.id, 1)"
+          @click="fetchSeries(genre.id, 1)"
           :class="{ active: selectedGenre === genre.id }"
         >
           {{ genre.name }}
@@ -134,23 +134,23 @@ onMounted(() => {
       <div class="loader"></div>
     </div>
 
-    <div v-else class="movies-grid">
+    <div v-else class="series-grid">
       <div 
-        v-for="movie in movies" 
-        :key="movie.id" 
-        class="movie-card"
-        @click="showMovieDetails(movie)"
+        v-for="show in series" 
+        :key="show.id" 
+        class="series-card"
+        @click="showSeriesDetails(show)"
       >
         <img 
-          :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
-          :alt="movie.title"
+          :src="`https://image.tmdb.org/t/p/w500${show.poster_path}`" 
+          :alt="show.name"
           @error="$event.target.src = '/placeholder-poster.jpg'"
         >
-        <div class="movie-info">
-          <h3>{{ movie.title }}</h3>
-          <div class="movie-meta">
-            <span class="rating">★ {{ movie.vote_average.toFixed(1) }}</span>
-            <span class="year">{{ movie.release_date?.split('-')[0] }}</span>
+        <div class="series-info">
+          <h3>{{ show.name }}</h3>
+          <div class="series-meta">
+            <span class="rating">★ {{ show.vote_average.toFixed(1) }}</span>
+            <span class="year">{{ show.first_air_date?.split('-')[0] }}</span>
           </div>
         </div>
       </div>
@@ -174,37 +174,37 @@ onMounted(() => {
     </div>
 
     
-    <div v-if="selectedMovie" class="modal" @click="selectedMovie = null">
+    <div v-if="selectedSeries" class="modal" @click="selectedSeries = null">
       <div class="modal-content" @click.stop>
-        <button class="close-button" @click="selectedMovie = null">&times;</button>
+        <button class="close-button" @click="selectedSeries = null">&times;</button>
         
         <div class="modal-header">
           <img 
-            :src="`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`" 
-            :alt="selectedMovie.title"
+            :src="`https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}`" 
+            :alt="selectedSeries.name"
           >
           <div class="modal-info">
-            <h2>{{ selectedMovie.title }}</h2>
-            <p class="tagline">{{ selectedMovie.tagline }}</p>
+            <h2>{{ selectedSeries.name }}</h2>
+            <p class="tagline">{{ selectedSeries.tagline }}</p>
             
             <div class="meta-info">
-              <span class="rating">★ {{ selectedMovie.vote_average.toFixed(1) }}</span>
-              <span>{{ formatDate(selectedMovie.release_date) }}</span>
-              <span>{{ selectedMovie.runtime }} min</span>
+              <span class="rating">★ {{ selectedSeries.vote_average.toFixed(1) }}</span>
+              <span>{{ formatDate(selectedSeries.first_air_date) }}</span>
+              <span>{{ selectedSeries.number_of_seasons }} temporadas</span>
             </div>
             
             <div class="genres-tags">
-              <span v-for="genre in selectedMovie.genres" :key="genre.id">
+              <span v-for="genre in selectedSeries.genres" :key="genre.id">
                 {{ genre.name }}
               </span>
             </div>
             
-            <p class="overview">{{ selectedMovie.overview }}</p>
+            <p class="overview">{{ selectedSeries.overview }}</p>
             
-            <div class="cast" v-if="selectedMovie.credits?.cast?.length">
+            <div class="cast" v-if="selectedSeries.credits?.cast?.length">
               <h3>Elenco Principal</h3>
               <div class="cast-list">
-                <div v-for="actor in selectedMovie.credits.cast.slice(0, 5)" :key="actor.id">
+                <div v-for="actor in selectedSeries.credits.cast.slice(0, 5)" :key="actor.id">
                   {{ actor.name }} como {{ actor.character }}
                 </div>
               </div>
@@ -212,10 +212,10 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="trailer-section" v-if="selectedMovie.videos?.results?.length">
+        <div class="trailer-section" v-if="selectedSeries.videos?.results?.length">
           <h3>Trailer</h3>
           <iframe
-            :src="`https://www.youtube.com/embed/${selectedMovie.videos.results[0].key}`"
+            :src="`https://www.youtube.com/embed/${selectedSeries.videos.results[0].key}`"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
@@ -227,7 +227,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.movies {
+.series {
   padding: 2rem;
 }
 
@@ -270,14 +270,14 @@ onMounted(() => {
   background-color: #e50914;
 }
 
-.movies-grid {
+.series-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 2rem;
   margin-bottom: 2rem;
 }
 
-.movie-card {
+.series-card {
   position: relative;
   cursor: pointer;
   transition: transform 0.2s;
@@ -286,21 +286,21 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.movie-card:hover {
+.series-card:hover {
   transform: scale(1.05);
 }
 
-.movie-card img {
+.series-card img {
   width: 100%;
   aspect-ratio: 2/3;
   object-fit: cover;
 }
 
-.movie-info {
+.series-info {
   padding: 1rem;
 }
 
-.movie-meta {
+.series-meta {
   display: flex;
   justify-content: space-between;
   margin-top: 0.5rem;
