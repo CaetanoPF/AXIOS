@@ -31,7 +31,7 @@ const fetchSeries = async (genreId = '', page = 1) => {
     const url = genreId
       ? `${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreId}&language=pt-BR&page=${page}`
       : `${BASE_URL}/tv/popular?api_key=${API_KEY}&language=pt-BR&page=${page}`;
-    
+
     const response = await fetch(url);
     const data = await response.json();
     series.value = data.results;
@@ -50,7 +50,7 @@ const searchSeries = async () => {
     fetchSeries('', 1);
     return;
   }
-  
+
   loading.value = true;
   try {
     const response = await fetch(
@@ -103,28 +103,16 @@ onMounted(() => {
   <div class="series">
     <div class="filters">
       <div class="search-container">
-        <input 
-          type="text" 
-          v-model="searchQuery" 
-          @keyup.enter="searchSeries"
-          placeholder="Buscar séries..."
-        >
+        <input type="text" v-model="searchQuery" @keyup.enter="searchSeries" placeholder="Buscar séries...">
         <button @click="searchSeries">Buscar</button>
       </div>
-      
+
       <div class="genres">
-        <button 
-          @click="fetchSeries('', 1)"
-          :class="{ active: !selectedGenre }"
-        >
+        <button @click="fetchSeries('', 1)" :class="{ active: !selectedGenre }">
           Todos
         </button>
-        <button 
-          v-for="genre in genres" 
-          :key="genre.id"
-          @click="fetchSeries(genre.id, 1)"
-          :class="{ active: selectedGenre === genre.id }"
-        >
+        <button v-for="genre in genres" :key="genre.id" @click="fetchSeries(genre.id, 1)"
+          :class="{ active: selectedGenre === genre.id }">
           {{ genre.name }}
         </button>
       </div>
@@ -135,17 +123,9 @@ onMounted(() => {
     </div>
 
     <div v-else class="series-grid">
-      <div 
-        v-for="show in series" 
-        :key="show.id" 
-        class="series-card"
-        @click="showSeriesDetails(show)"
-      >
-        <img 
-          :src="`https://image.tmdb.org/t/p/w500${show.poster_path}`" 
-          :alt="show.name"
-          @error="$event.target.src = '/placeholder-poster.jpg'"
-        >
+      <div v-for="show in series" :key="show.id" class="series-card" @click="showSeriesDetails(show)">
+        <img :src="`https://image.tmdb.org/t/p/w500${show.poster_path}`" :alt="show.name"
+          @error="$event.target.src = '/placeholder-poster.jpg'">
         <div class="series-info">
           <h3>{{ show.name }}</h3>
           <div class="series-meta">
@@ -156,51 +136,40 @@ onMounted(() => {
       </div>
     </div>
 
-    
     <div class="pagination" v-if="totalPages > 1">
-      <button 
-        :disabled="currentPage === 1"
-        @click="changePage(currentPage - 1)"
-      >
+      <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)">
         Anterior
       </button>
       <span>Página {{ currentPage }} de {{ totalPages }}</span>
-      <button 
-        :disabled="currentPage === totalPages"
-        @click="changePage(currentPage + 1)"
-      >
+      <button :disabled="currentPage === totalPages" @click="changePage(currentPage + 1)">
         Próxima
       </button>
     </div>
 
-    
     <div v-if="selectedSeries" class="modal" @click="selectedSeries = null">
       <div class="modal-content" @click.stop>
         <button class="close-button" @click="selectedSeries = null">&times;</button>
-        
+
         <div class="modal-header">
-          <img 
-            :src="`https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}`" 
-            :alt="selectedSeries.name"
-          >
+          <img :src="`https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}`" :alt="selectedSeries.name">
           <div class="modal-info">
             <h2>{{ selectedSeries.name }}</h2>
             <p class="tagline">{{ selectedSeries.tagline }}</p>
-            
+
             <div class="meta-info">
               <span class="rating">★ {{ selectedSeries.vote_average.toFixed(1) }}</span>
               <span>{{ formatDate(selectedSeries.first_air_date) }}</span>
               <span>{{ selectedSeries.number_of_seasons }} temporadas</span>
             </div>
-            
+
             <div class="genres-tags">
               <span v-for="genre in selectedSeries.genres" :key="genre.id">
                 {{ genre.name }}
               </span>
             </div>
-            
+
             <p class="overview">{{ selectedSeries.overview }}</p>
-            
+
             <div class="cast" v-if="selectedSeries.credits?.cast?.length">
               <h3>Elenco Principal</h3>
               <div class="cast-list">
@@ -214,12 +183,9 @@ onMounted(() => {
 
         <div class="trailer-section" v-if="selectedSeries.videos?.results?.length">
           <h3>Trailer</h3>
-          <iframe
-            :src="`https://www.youtube.com/embed/${selectedSeries.videos.results[0].key}`"
-            frameborder="0"
+          <iframe :src="`https://www.youtube.com/embed/${selectedSeries.videos.results[0].key}`" frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+            allowfullscreen></iframe>
         </div>
       </div>
     </div>
@@ -353,8 +319,13 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .modal {

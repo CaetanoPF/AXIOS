@@ -31,7 +31,7 @@ const fetchMovies = async (genreId = '', page = 1) => {
     const url = genreId
       ? `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&language=pt-BR&page=${page}`
       : `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=pt-BR&page=${page}`;
-    
+
     const response = await fetch(url);
     const data = await response.json();
     movies.value = data.results;
@@ -50,7 +50,7 @@ const searchMovies = async () => {
     fetchMovies('', 1);
     return;
   }
-  
+
   loading.value = true;
   try {
     const response = await fetch(
@@ -103,28 +103,16 @@ onMounted(() => {
   <div class="movies">
     <div class="filters">
       <div class="search-container">
-        <input 
-          type="text" 
-          v-model="searchQuery" 
-          @keyup.enter="searchMovies"
-          placeholder="Buscar filmes..."
-        >
+        <input type="text" v-model="searchQuery" @keyup.enter="searchMovies" placeholder="Buscar filmes...">
         <button @click="searchMovies">Buscar</button>
       </div>
-      
+
       <div class="genres">
-        <button 
-          @click="fetchMovies('', 1)"
-          :class="{ active: !selectedGenre }"
-        >
+        <button @click="fetchMovies('', 1)" :class="{ active: !selectedGenre }">
           Todos
         </button>
-        <button 
-          v-for="genre in genres" 
-          :key="genre.id"
-          @click="fetchMovies(genre.id, 1)"
-          :class="{ active: selectedGenre === genre.id }"
-        >
+        <button v-for="genre in genres" :key="genre.id" @click="fetchMovies(genre.id, 1)"
+          :class="{ active: selectedGenre === genre.id }">
           {{ genre.name }}
         </button>
       </div>
@@ -135,17 +123,9 @@ onMounted(() => {
     </div>
 
     <div v-else class="movies-grid">
-      <div 
-        v-for="movie in movies" 
-        :key="movie.id" 
-        class="movie-card"
-        @click="showMovieDetails(movie)"
-      >
-        <img 
-          :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
-          :alt="movie.title"
-          @error="$event.target.src = '/placeholder-poster.jpg'"
-        >
+      <div v-for="movie in movies" :key="movie.id" class="movie-card" @click="showMovieDetails(movie)">
+        <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" :alt="movie.title"
+          @error="$event.target.src = '/placeholder-poster.jpg'">
         <div class="movie-info">
           <h3>{{ movie.title }}</h3>
           <div class="movie-meta">
@@ -156,51 +136,42 @@ onMounted(() => {
       </div>
     </div>
 
-    
+
     <div class="pagination" v-if="totalPages > 1">
-      <button 
-        :disabled="currentPage === 1"
-        @click="changePage(currentPage - 1)"
-      >
+      <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)">
         Anterior
       </button>
       <span>Página {{ currentPage }} de {{ totalPages }}</span>
-      <button 
-        :disabled="currentPage === totalPages"
-        @click="changePage(currentPage + 1)"
-      >
+      <button :disabled="currentPage === totalPages" @click="changePage(currentPage + 1)">
         Próxima
       </button>
     </div>
 
-    
+
     <div v-if="selectedMovie" class="modal" @click="selectedMovie = null">
       <div class="modal-content" @click.stop>
         <button class="close-button" @click="selectedMovie = null">&times;</button>
-        
+
         <div class="modal-header">
-          <img 
-            :src="`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`" 
-            :alt="selectedMovie.title"
-          >
+          <img :src="`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`" :alt="selectedMovie.title">
           <div class="modal-info">
             <h2>{{ selectedMovie.title }}</h2>
             <p class="tagline">{{ selectedMovie.tagline }}</p>
-            
+
             <div class="meta-info">
               <span class="rating">★ {{ selectedMovie.vote_average.toFixed(1) }}</span>
               <span>{{ formatDate(selectedMovie.release_date) }}</span>
               <span>{{ selectedMovie.runtime }} min</span>
             </div>
-            
+
             <div class="genres-tags">
               <span v-for="genre in selectedMovie.genres" :key="genre.id">
                 {{ genre.name }}
               </span>
             </div>
-            
+
             <p class="overview">{{ selectedMovie.overview }}</p>
-            
+
             <div class="cast" v-if="selectedMovie.credits?.cast?.length">
               <h3>Elenco Principal</h3>
               <div class="cast-list">
@@ -214,12 +185,9 @@ onMounted(() => {
 
         <div class="trailer-section" v-if="selectedMovie.videos?.results?.length">
           <h3>Trailer</h3>
-          <iframe
-            :src="`https://www.youtube.com/embed/${selectedMovie.videos.results[0].key}`"
-            frameborder="0"
+          <iframe :src="`https://www.youtube.com/embed/${selectedMovie.videos.results[0].key}`" frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+            allowfullscreen></iframe>
         </div>
       </div>
     </div>
@@ -353,8 +321,13 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .modal {

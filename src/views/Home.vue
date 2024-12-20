@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 import { ref, onMounted } from 'vue'
 
@@ -68,33 +69,33 @@ onMounted(() => {
           <p>{{ featuredContent.overview }}</p>
           <button class="featured-button" @click="handleFeaturedClick">Ver Mais</button>
         </div>
-        <div
-          class="featured-backdrop"
-          :style="{
-            backgroundImage: `url(https://image.tmdb.org/t/p/original${featuredContent.backdrop_path})`,
-          }"
-        ></div>
+        <div class="featured-backdrop" :style="{
+          backgroundImage: `url(https://image.tmdb.org/t/p/original${featuredContent.backdrop_path})`,
+        }"></div>
       </div>
     </section>
 
-    
-    <div v-if="showModal" class="modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center;">
-      <div style="background: #141414; padding: 20px; border-radius: 8px; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative; margin: 20px;">
-        <button @click="closeModal" style="position: absolute; right: 10px; top: 10px; background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
-        
+
+    <div v-if="showModal" class="modal"
+      style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+      <div
+        style="background: #141414; padding: 20px; border-radius: 8px; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative; margin: 20px;">
+        <button @click="closeModal"
+          style="position: absolute; right: 10px; top: 10px; background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+
         <div v-if="movieDetails" style="color: white;">
           <h2 style="margin-bottom: 15px;">{{ movieDetails.title }}</h2>
           <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-            <img 
-              :src="`https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`" 
-              :alt="movieDetails.title"
-              style="width: 200px; border-radius: 8px;"
-            />
+            <img :src="`https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`" :alt="movieDetails.title"
+              style="width: 200px; border-radius: 8px;" />
             <div>
-              <p style="margin-bottom: 10px;"><strong>Avaliação:</strong> ★ {{ movieDetails.vote_average.toFixed(1) }}</p>
-              <p style="margin-bottom: 10px;"><strong>Lançamento:</strong> {{ new Date(movieDetails.release_date).toLocaleDateString('pt-BR') }}</p>
+              <p style="margin-bottom: 10px;"><strong>Avaliação:</strong> ★ {{ movieDetails.vote_average.toFixed(1) }}
+              </p>
+              <p style="margin-bottom: 10px;"><strong>Lançamento:</strong> {{ new
+                Date(movieDetails.release_date).toLocaleDateString('pt-BR') }}</p>
               <p style="margin-bottom: 10px;"><strong>Duração:</strong> {{ movieDetails.runtime }} minutos</p>
-              <p style="margin-bottom: 10px;"><strong>Gêneros:</strong> {{ movieDetails.genres.map(g => g.name).join(', ') }}</p>
+              <p style="margin-bottom: 10px;"><strong>Gêneros:</strong> {{ movieDetails.genres.map(g =>
+                g.name).join(', ') }}</p>
               <p><strong>Sinopse:</strong><br>{{ movieDetails.overview }}</p>
             </div>
           </div>

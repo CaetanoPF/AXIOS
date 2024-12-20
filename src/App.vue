@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
- 
 
 const isMenuOpen = ref(false);
 const router = useRouter();
@@ -20,7 +19,7 @@ const navigateTo = (route) => {
   <div class="app">
     <header>
       <div class="header-content">
-      <RouterLink class="cine-logo" to="/"> <img src="../src/assets/imagens/cinekeeflogo.png" alt="">  </RouterLink> 
+        <RouterLink class="cine-logo" to="/"> <img src="../src/assets/imagens/cinekeeflogo.png" alt=""> </RouterLink>
 
         <nav>
           <div class="nav-links">
@@ -51,16 +50,18 @@ const navigateTo = (route) => {
   </div>
 </template>
 
-<style>
+<style scoped>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-.cine-logo img{
+
+.cine-logo img {
   width: 5rem;
   height: 3.5rem;
 }
+
 .app {
   font-family: Arial, sans-serif;
   background-color: #141414;
